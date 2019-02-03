@@ -11,12 +11,51 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Transaction {
-    public Transaction() {}
+    @Id
+    @Column(columnDefinition = "CHAR(36)", nullable = false)
+    private String id;
 
-    public Transaction(String id, Person person, String eventId, LocalDateTime transactionDate, double amount, String description, LocalDateTime created, Person createdBy) {
+    @Column(name = "TransactionDate", columnDefinition = "DATETIME", nullable = false)
+    private LocalDateTime transactionDate;
+
+    @Column(name = "Amount", columnDefinition = "DECIMAL(10,2)", nullable = false)
+    private double amount;
+
+    @Column(name = "Description", columnDefinition = "VARCHAR(256)")
+    private String description;
+
+    @Column(name = "Created", columnDefinition = "DATETIME", nullable = false)
+    private LocalDateTime created;
+
+    @Column(name = "Modified", columnDefinition = "DATETIME")
+    private LocalDateTime modified;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PersonId", columnDefinition = "CHAR(36)", nullable = false)
+    private Person person;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EventId", columnDefinition = "CHAR(36)")
+    private Event event;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CreatedBy", columnDefinition = "CHAR(36)", nullable = false)
+    private Person createdBy;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ModifiedBy", columnDefinition = "CHAR(36)")
+    private Person modifiedBy;
+
+    public Transaction() {
+    }
+
+    public Transaction(String id, Person person, Event event, LocalDateTime transactionDate, double amount, String description, LocalDateTime created, Person createdBy) {
         this.id = id;
         this.person = person;
-        this.eventId = eventId;
+        this.event = event;
         this.transactionDate = transactionDate;
         this.amount = amount;
         this.description = description;
@@ -30,14 +69,6 @@ public class Transaction {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
     }
 
     public LocalDateTime getTransactionDate() {
@@ -80,26 +111,6 @@ public class Transaction {
         this.modified = modified;
     }
 
-    @Id
-    @Column(columnDefinition = "CHAR(36)", nullable = false)
-    private String id;
-    @Column(name = "EventId", columnDefinition = "CHAR(34)")
-    private String eventId;
-    @Column(name = "TransactionDate", columnDefinition = "DATETIME", nullable = false)
-    private LocalDateTime transactionDate;
-    @Column(name = "Amount", columnDefinition = "DECIMAL(10,2)", nullable = false)
-    private double amount;
-    @Column(name = "Description", columnDefinition = "VARCHAR(256)")
-    private String description;
-    @Column(name = "Created", columnDefinition = "DATETIME", nullable = false)
-    private LocalDateTime created;
-    @Column(name = "Modified", columnDefinition = "DATETIME")
-    private LocalDateTime modified;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PersonId")
-    private Person person;
-
     public Person getPerson() {
         return person;
     }
@@ -108,9 +119,13 @@ public class Transaction {
         this.person = person;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CreatedBy", columnDefinition = "CHAR", nullable = false)
-    private Person createdBy;
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 
     public Person getCreatedBy() {
         return createdBy;
@@ -120,10 +135,6 @@ public class Transaction {
         this.createdBy = createdBy;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModifiedBy", columnDefinition = "CHAR")
-    private Person modifiedBy;
-
     public Person getModifiedBy() {
         return modifiedBy;
     }
@@ -132,22 +143,3 @@ public class Transaction {
         this.modifiedBy = modifiedBy;
     }
 }
-
-
-/*
-  Id char(36) COLLATE utf8_swedish_ci NOT NULL,
-  PersonId char(36) COLLATE utf8_swedish_ci NOT NULL,
-  TransactionId char(36) COLLATE utf8_swedish_ci DEFAULT NULL,
-  TransactionDate datetime NOT NULL,
-  Amount decimal(10,2) NOT NULL,
-  Description varchar(256) COLLATE utf8_swedish_ci NOT NULL,
-  Created datetime NOT NULL,
-  CreatedBy char(36) COLLATE utf8_swedish_ci NOT NULL,
-  Modified datetime DEFAULT NULL,
-  ModifiedBy char(36) COLLATE utf8_swedish_ci DEFAULT NULL,
-  PRIMARY KEY (Id),
-  UNIQUE KEY `PersonId_EventId` (`PersonId`,`EventId`),
-  KEY CreatedBy (CreatedBy),
-  KEY ModifiedBy (ModifiedBy)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
- */

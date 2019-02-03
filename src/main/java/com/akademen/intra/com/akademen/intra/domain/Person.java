@@ -2,6 +2,7 @@ package com.akademen.intra.com.akademen.intra.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,12 +10,88 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
 public class Person {
-    public Person() {}
+    @Id
+    @Column(columnDefinition = "CHAR(36)", nullable = false)
+    private String id;
+
+    @Column(name = "FirstName", columnDefinition = "VARCHAR(64)", nullable = false)
+    private String firstName;
+
+    @Column(name = "LastName", columnDefinition = "VARCHAR(64)", nullable = false)
+    private String lastName;
+
+    @Column(name = "Voice", columnDefinition = "CHAR(2)")
+    private String voice; // ENUM?
+
+    @Column(name = "Joined", columnDefinition = "VARCHAR(5)")
+    private String joined;
+
+    @Column(name = "Address", columnDefinition = "VARCHAR(128)")
+    private String address;
+
+    @Column(name = "PostalCode", columnDefinition = "VARCHAR(64)")
+    private String postalCode;
+
+    @Column(name = "City", columnDefinition = "VARCHAR(64)")
+    private String city;
+
+    @Column(name = "CountryId", columnDefinition = "CHAR(2)")
+    private String countryId;
+
+    @Column(name = "Phone", columnDefinition = "VARCHAR(64)")
+    private String phone;
+
+    @Column(name = "Email", columnDefinition = "VARCHAR(64)")
+    private String email;
+
+    @Column(name = "Allergies", columnDefinition = "VARCHAR(256)")
+    private String allergies;
+
+    @Column(name = "Description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "Status", columnDefinition = "TINYINT(4)", nullable = false)
+    private int status;
+
+    @Column(name = "UserRights", columnDefinition = "INT(10)", nullable = false)
+    private int userRights;
+
+    @Column(name = "Password", columnDefinition = "CHAR(60)", nullable = false)
+    private String password;
+
+    @Column(name = "Created", columnDefinition = "DATETIME", nullable = false)
+    private LocalDateTime created;
+
+    @Column(name = "Modified", columnDefinition = "DATETIME")
+    private LocalDateTime modified;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CreatedBy", columnDefinition = "CHAR(36)", nullable = false)
+    private Person createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ModifiedBy", columnDefinition = "CHAR(36)")
+    private Person modifiedBy;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+    private List<Transaction> transactions;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "PersonHasEvent", joinColumns = @JoinColumn(name = "PersonId"), inverseJoinColumns = @JoinColumn(name = "EventId"))
+    Set<Event> events;
+
+    @OneToMany(mappedBy = "person")
+    Set<PersonHasEvent> personHasEvents;
+
+    public Person() {
+    }
 
     public Person(String id, String firstName, String lastName, String voice, String joined, String address, String postalCode, String city, String countryId, String phone, String email, String allergies, String description, int status, int userRights, String password, LocalDateTime created, Person createdBy) {
         this.id = id;
@@ -181,48 +258,6 @@ public class Person {
         this.modified = modified;
     }
 
-    @Id
-    @Column(columnDefinition = "CHAR(36)", nullable = false)
-    private String id;
-    @Column(name = "FirstName", columnDefinition = "VARCHAR(64)", nullable = false)
-    private String firstName;
-    @Column(name = "LastName", columnDefinition = "VARCHAR(64)", nullable = false)
-    private String lastName;
-    @Column(name = "Voice", columnDefinition = "CHAR(2)")
-    private String voice; // ENUM?
-    @Column(name = "Joined", columnDefinition = "VARCHAR(5)")
-    private String joined;
-    @Column(name = "Address", columnDefinition = "VARCHAR(128)")
-    private String address;
-    @Column(name = "PostalCode", columnDefinition = "VARCHAR(64)")
-    private String postalCode;
-    @Column(name = "City", columnDefinition = "VARCHAR(64)")
-    private String city;
-    @Column(name = "CountryId", columnDefinition = "CHAR(2)")
-    private String countryId;
-    @Column(name = "Phone", columnDefinition = "VARCHAR(64)")
-    private String phone;
-    @Column(name = "Email", columnDefinition = "VARCHAR(64)")
-    private String email;
-    @Column(name = "Allergies", columnDefinition = "VARCHAR(256)")
-    private String allergies;
-    @Column(name = "Description", columnDefinition = "TEXT")
-    private String description;
-    @Column(name = "Status", columnDefinition = "TINYINT(4)", nullable = false)
-    private int status;
-    @Column(name = "UserRights", columnDefinition = "INT(10)", nullable = false)
-    private int userRights;
-    @Column(name = "Password", columnDefinition = "CHAR(60)", nullable=false)
-    private String password;
-    @Column(name = "Created", columnDefinition = "DATETIME", nullable = false)
-    private LocalDateTime created;
-    @Column(name = "Modified", columnDefinition = "DATETIME")
-    private LocalDateTime modified;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CreatedBy", columnDefinition = "CHAR", nullable = false)
-    private Person createdBy;
-
     public Person getCreatedBy() {
         return createdBy;
     }
@@ -230,10 +265,6 @@ public class Person {
     public void setCreatedBy(Person createdBy) {
         this.createdBy = createdBy;
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModifiedBy", columnDefinition = "CHAR")
-    private Person modifiedBy;
 
     public Person getModifiedBy() {
         return modifiedBy;
@@ -243,15 +274,27 @@ public class Person {
         this.modifiedBy = modifiedBy;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="person")
-    private List<Transaction> transactions;
-
-    //Getter and setter
     public List<Transaction> getTransactions() {
         return transactions;
     }
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
+
+    public Set<PersonHasEvent> getPersonHasEvents() {
+        return personHasEvents;
+    }
+
+    public void setPersonHasEvents(Set<PersonHasEvent> personHasEvents) {
+        this.personHasEvents = personHasEvents;
     }
 }

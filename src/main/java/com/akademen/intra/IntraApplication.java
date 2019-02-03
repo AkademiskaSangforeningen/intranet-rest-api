@@ -1,14 +1,14 @@
 package com.akademen.intra;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 
+import com.akademen.intra.com.akademen.intra.domain.EventRepository;
 import com.akademen.intra.com.akademen.intra.domain.Person;
 import com.akademen.intra.com.akademen.intra.domain.PersonRepository;
 import com.akademen.intra.com.akademen.intra.domain.Transaction;
 import com.akademen.intra.com.akademen.intra.domain.TransactionRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,11 @@ public class IntraApplication {
 	private PersonRepository personRepository;
 	@Autowired
 	private TransactionRepository transactionRepository;
+	@Autowired
+	private EventRepository eventRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(IntraApplication.class, args);
-		logger.info("this is a test");
 	}
 
 	@Bean
