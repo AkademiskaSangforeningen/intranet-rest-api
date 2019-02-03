@@ -15,6 +15,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Person {
     @Id
@@ -74,20 +76,25 @@ public class Person {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CreatedBy", columnDefinition = "CHAR(36)", nullable = false)
+    @JsonIgnore
     private Person createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ModifiedBy", columnDefinition = "CHAR(36)")
+    @JsonIgnore
     private Person modifiedBy;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+    @JsonIgnore
     private List<Transaction> transactions;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "PersonHasEvent", joinColumns = @JoinColumn(name = "PersonId"), inverseJoinColumns = @JoinColumn(name = "EventId"))
+    @JsonIgnore
     Set<Event> events;
 
     @OneToMany(mappedBy = "person")
+    @JsonIgnore
     Set<PersonHasEvent> personHasEvents;
 
     public Person() {
